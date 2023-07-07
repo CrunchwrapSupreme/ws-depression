@@ -18,7 +18,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:tns="http://www.w3.org/2003/05/soap-envelope"
            targetNamespace="http://www.w3.org/2003/05/soap-envelope" 
-		   elementFormDefault="qualified" >
+       elementFormDefault="qualified" >
 <!--
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" 
              schemaLocation="http://www.w3.org/2001/xml.xsd"/>
@@ -37,10 +37,10 @@
   <xs:element name="Header" type="tns:Header" />
   <xs:complexType name="Header" >
     <xs:annotation>
-	  <xs:documentation>
-	  Elements replacing the wildcard MUST be namespace qualified, but can be in the targetNamespace
-	  </xs:documentation>
-	</xs:annotation>
+    <xs:documentation>
+    Elements replacing the wildcard MUST be namespace qualified, but can be in the targetNamespace
+    </xs:documentation>
+  </xs:annotation>
     <xs:sequence>
       <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"  />
     </xs:sequence>
@@ -72,32 +72,32 @@
   <xs:element name="Fault" type="tns:Fault" />
   <xs:complexType name="Fault" final="extension" >
     <xs:annotation>
-	  <xs:documentation>
-	    Fault reporting structure
-	  </xs:documentation>
-	</xs:annotation>
+    <xs:documentation>
+      Fault reporting structure
+    </xs:documentation>
+  </xs:annotation>
     <xs:sequence>
       <xs:element name="Code" type="tns:faultcode" />
       <xs:element name="Reason" type="tns:faultreason" />
       <xs:element name="Node" type="xs:anyURI" minOccurs="0" />
-	  <xs:element name="Role" type="xs:anyURI" minOccurs="0" />
+    <xs:element name="Role" type="xs:anyURI" minOccurs="0" />
       <xs:element name="Detail" type="tns:detail" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="faultreason" >
     <xs:sequence>
-	  <xs:element name="Text" type="tns:reasontext" 
+    <xs:element name="Text" type="tns:reasontext" 
                   minOccurs="1"  maxOccurs="unbounded" />
-	</xs:sequence>
+  </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="reasontext" >
     <xs:simpleContent>
-	  <xs:extension base="xs:string" >
-	    <xs:attribute ref="xml:lang" use="required" />
-	  </xs:extension>
-	</xs:simpleContent>
+    <xs:extension base="xs:string" >
+      <xs:attribute ref="xml:lang" use="required" />
+    </xs:extension>
+  </xs:simpleContent>
   </xs:complexType>
   
   <xs:complexType name="faultcode">
@@ -151,8 +151,8 @@
   <xs:element name="Upgrade" type="tns:UpgradeType" />
   <xs:complexType name="UpgradeType" >
     <xs:sequence>
-	  <xs:element name="SupportedEnvelope" type="tns:SupportedEnvType" minOccurs="1" maxOccurs="unbounded" />
-	</xs:sequence>
+    <xs:element name="SupportedEnvelope" type="tns:SupportedEnvType" minOccurs="1" maxOccurs="unbounded" />
+  </xs:sequence>
   </xs:complexType>
 
 
