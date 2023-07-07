@@ -1,7 +1,7 @@
 {
-  "name": "xml-toolkit-net",
-  "version": "1.0.34",
-  "description": "XML parser, marshaller, SOAP adapter",
+  "name": "ws-depression",
+  "version": "1.0.0",
+  "description": "ws-discovery over UDP multicast.",
   "main": "index.js",
   "files": [
     "/lib",
@@ -32,23 +32,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/do-/node-xml-toolkit.git"
+    "url": "git+https://github.com/CrunchwrapSupreme/ws-depression.git"
   },
   "keywords": [
-    "xml",
     "soap",
-    "xsd",
-    "wsdl",
-    "sax"
+    "ws-discovery",
+    "satan"
   ],
-  "author": "Dmitry Ovsyanko",
+  "author": "David Young",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/do-/node-xml-toolkit/issues"
+    "url": "https://github.com/CrunchwrapSupreme/ws-depression/issues"
   },
-  "homepage": "https://github.com/do-/node-xml-toolkit#readme",
+  "homepage": "https://github.com/CrunchwrapSupreme/ws-depression#readme",
   "devDependencies": {
-    "jest": "^29.3.1"
+    "jest": "^29.3.1",
+    "standard": "^17.1.0"
   },
   "dependencies": {
     "follow-redirects": "^1.15.2",
