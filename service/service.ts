@@ -113,12 +113,12 @@ export class DeviceEmitter extends EventEmitter {
     }
 
     /** Broadcast IPv4 UDP probe */
-    broadcastProbeV4() {
+    broadcastProbeV4(): Promise<void> {
         return this.sendProbe(IPV4_UPNP, WS_DISCOVER_PORT);
     }
 
     /** Broadcast IPv6 UDP probe */
-    broadcastProbeV6() {
+    broadcastProbeV6(): Promise<void> {
         return this.sendProbe(IPV6_UPNP, WS_DISCOVER_PORT);
     }
 
