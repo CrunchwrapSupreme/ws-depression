@@ -2,17 +2,16 @@ import { RemoteInfo } from "node:dgram";
 
 const NoneVal = null;
 export type None = null;
-export type Optional<T> = T | None;
 
-export interface ObjectMessage {
-    [attr: string]: ObjectMessage | String
+export interface MessageObject {
+    [attr: string]: MessageObject | String
 }
 
 function splim(v: string): string[] {
     return v.split(' ').map((v: string) => v.trim());
 }
 
-function dig<T, R=string>(root: ObjectMessage, path: string, defval: T): R | T {
+function dig<T, R=string>(root: MessageObject, path: string, defval: T): R | T {
     const attr_path = path.split('.');
     let node: any = root;
     
@@ -31,10 +30,10 @@ function dig<T, R=string>(root: ObjectMessage, path: string, defval: T): R | T {
 * Deserialization type for ws-discovery ProbeMatch
 */
 export class ProbeMatch {
-    readonly raw: ObjectMessage;
+    readonly raw: MessageObject;
     readonly remote: RemoteInfo;
 
-    constructor(json_msg: ObjectMessage, remote: RemoteInfo) {
+    constructor(json_msg: MessageObject, remote: RemoteInfo) {
         this.raw = json_msg;
         this.remote = remote;
     }
@@ -48,20 +47,20 @@ export class ProbeMatch {
         return val;
     }
 
-    get action(): Optional<String> {
-        return dig(this.raw, 'Header.Action', NoneVal)
+    get action(): String {
+        return dig(this.raw, 'Header.Action', '')
     }
 
-    get to(): Optional<String> {
-        return dig(this.raw, 'Header.To', NoneVal);
+    get to(): String {
+        return dig(this.raw, 'Header.To', '');
     }
 
-    get relates_to(): Optional<String> {
-        return dig(this.raw, 'Header.RelatesTo', NoneVal);
+    get relates_to(): String {
+        return dig(this.raw, 'Header.RelatesTo', '');
     }
 
-    get message_id(): Optional<String> {
-        return dig(this.raw, 'Header.MessageID', NoneVal);
+    get message_id(): String {
+        return dig(this.raw, 'Header.MessageID', '');
     }
 
     get types(): string[] {

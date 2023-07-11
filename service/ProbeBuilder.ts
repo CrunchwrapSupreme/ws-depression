@@ -7,28 +7,19 @@ import { v4 as uuidv4 } from 'uuid';
 export class ProbeBuilder {
     readonly message_id: string;
     readonly message: string;
-    readonly xs: any;
-    private _types: string[];
+    readonly types: string[];
+    private readonly xs: XMLSchemata;
 
-    constructor(xs: any, types: string[] = []) {
+    constructor(xs: XMLSchemata, types: string[] = []) {
         this.xs = xs;
         this.message_id = `uuid:${uuidv4()}`;
-        this._types = types;
+        this.types = types;
         this.message = this.build_probe();
-    }
-
-    get types() {
-        return this._types;
-    }
-
-    toString(): any {
-        return this.message;
     }
 
     private build_header() {
         const fields = [];
         const { xs, message_id } = this;
-        //const must = { mustUnderstand: true };
         fields.push({ MessageID: message_id });
         fields.push({ To: 'urn:schemas-xmlsoap-org:ws:2005:04:discovery' });
         fields.push({ Action: 'http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe' });
@@ -48,13 +39,18 @@ export class ProbeBuilder {
         return XMLSchemata.any(body_xml, {});
     }
 
-    private build_probe() {
+    private build_probe(): string {
         const message = { 
             Envelope: {
                 Header: this.build_header(),
                 Body: this.build_body()
             }
         };
-        return this.xs.stringify(message);
+        const probe_msg = this.xs.stringify(message);
+        if(!probe_msg) {
+            throw new Error("Could not construct probe message?");
+        } else {
+            return probe_msg
+        }
     }
 }
