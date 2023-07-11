@@ -1,5 +1,5 @@
 {
-  "name": "ws-depression",
+  "name": "@crunchwrapsupreme/ws-depression",
   "version": "0.0.1",
   "description": "ws-discovery over UDP multicast.",
   "main": "dist/index.js",
@@ -58,5 +58,10 @@
     "follow-redirects": "^1.15.2",
     "string-escape-map": "^1.0.0",
     "uuid": "^9.0.0"
+  },
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
   }
 }

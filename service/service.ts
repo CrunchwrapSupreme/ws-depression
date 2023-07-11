@@ -61,6 +61,7 @@ async function enumerateDevices(socket: Socket, scan_time: number, types: string
 	});
 }
 
+// Provide socket options for arbitrary broadcast addresses
 export function socketFactory(udp_version: SocketType, broadcast_addr: string, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
     return new Promise((resolve, reject) => {
 		const socket = createSocket(udp_version);
@@ -75,11 +76,12 @@ export function socketFactory(udp_version: SocketType, broadcast_addr: string, s
 	});
 }
 
-// Voila
+// Emit a udpv4 probe and then enumerate valid ProbeMatch responses
 export function discoverDeviceV4(scan_time = 5000, types: string[] = []): Promise<ProbeMatch[]> {
 	return socketFactory('udp4', IPV4_UPNP, scan_time, types);
 }
 
+// Emit a udpv6 probe and then enumerate valid ProbeMatch responses
 export function discoverDeviceV6(scan_time = 5000, types: string[] = []): Promise<ProbeMatch[]> {
 	return socketFactory('udp6', IPV6_UPNP, scan_time, types);
 }
