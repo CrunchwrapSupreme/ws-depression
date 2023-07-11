@@ -48,9 +48,10 @@ export class DiscoveryError extends Error {
  */
 export class DeviceEmitter extends EventEmitter {
     readonly socket: SocketProducer;
-    readonly xs: XMLSchemata;
     readonly probe: ProbeBuilder;
     readonly types: string[];
+
+    private xs: XMLSchemata;
 
     /** 
      * Emitted when a probe is sent.
@@ -82,6 +83,10 @@ export class DeviceEmitter extends EventEmitter {
      */
     static readonly MISMATCH = 'mismatch';
 
+    /**
+     * @internal
+     * @hidden
+     */
     constructor(socket: SocketProducer, xs: XMLSchemata, types: string[]) {
         super();
         this.socket = socket;
@@ -163,7 +168,11 @@ export async function deviceSocket(socket: SocketProducer, types: string[] = [])
     return Promise.resolve(emitter);
 }
 
-async function enumerateDevices(socket: SocketProducer, broadcast_addr: string, port: number, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
+/**
+ * Probably use [[socketFactory]], [[discoverDevicesV4]], or [[discoverDevicesV6]]
+ * @internal
+ */
+export async function enumerateDevices(socket: SocketProducer, broadcast_addr: string, port: number, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
     const devices: ProbeMatch[] = [];
     let emitter = await deviceSocket(socket, types);
     emitter.on('match', match => devices.push(match));
