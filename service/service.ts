@@ -50,6 +50,8 @@ export class DeviceEmitter extends EventEmitter {
     readonly socket: SocketProducer;
     readonly xs: XMLSchemata;
     readonly probe: ProbeBuilder;
+    readonly types: string[];
+
     /** 
      * Emitted when a probe is sent
      * @event
@@ -83,6 +85,7 @@ export class DeviceEmitter extends EventEmitter {
         this.socket = socket;
         this.xs = xs;
         this.probe = new ProbeBuilder(xs, types);
+        this.types = types;
         this.addListeners();
     }
 
@@ -127,7 +130,7 @@ export class DeviceEmitter extends EventEmitter {
         const json_msg = transformer(document);
         const probe_match = new ProbeMatch(json_msg, remote);
         
-        if (probe_match.validMatch(this.probe.message_id)) {
+        if (probe_match.validMatch(this.probe.message_id, this.types)) {
             this.emit(DeviceEmitter.MATCH, probe_match);
         } else if (probe_match.message_id != this.probe.message_id) {
             this.emit(DeviceEmitter.MISMATCH, probe_match)

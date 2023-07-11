@@ -42,7 +42,7 @@ export class ProbeMatch {
         let val = this.relates_to === origin_id
         val &&= this.to === "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
         val &&= this.action === "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
-        val &&= valid_types.some(type => this.types.includes(type, 0));
+        val &&= valid_types.length == 0 || valid_types.some(type => this.types.includes(type, 0));
         
         return val;
     }
