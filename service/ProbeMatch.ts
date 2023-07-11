@@ -1,5 +1,3 @@
-import { VIDEO_TYPE } from "./constants.js";
-
 function splim(v: string) {
 	return v.split(' ').map((v: string) => v.trim());
 }

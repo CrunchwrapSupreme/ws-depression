@@ -14,6 +14,14 @@ export class ProbeBuilder {
 		this.message = this.build_probe();
 	}
 
+	get types() {
+		return this._types;
+	}
+
+	toString(): any {
+		return this.message;
+	}
+
 	private build_header() {
 		const fields = [];
 		const { xs, message_id } = this;
@@ -26,13 +34,10 @@ export class ProbeBuilder {
 		return XMLSchemata.any(header_fields.join(""), {});
 	}
 
-	get types() {
-		return this._types.join('  ');
-	}
-
 	private build_body() {
 		const { xs } = this;
-		const types = xs.stringify({ Types: this.types }, {}, true);
+		const type_list = this.types.join('  ');
+		const types = xs.stringify({ Types: type_list }, {}, true);
 		const body = {
 			Probe: XMLSchemata.any(types, {})
 		};

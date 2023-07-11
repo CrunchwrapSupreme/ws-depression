@@ -1,0 +1,1 @@
+export const video_transmitter = 'dn:NetworkVideoTransmitter';

@@ -13,10 +13,9 @@ import EventEmitter from 'events';
 const parser = new XMLReader();
 
 // Helper to promisify the socket broadcast
-async function sendProbe(socket: Socket, probe: ProbeBuilder): Promise<Error|null> {
-	const addr = socket.address();
+async function sendProbe(socket: Socket, probe: ProbeBuilder, broadcast_addr: string, port: number): Promise<null> {
 	return new Promise((resolve, reject) => {
-		socket.send(probe.message, addr.port, addr.address, (err) => {
+		socket.send(probe.message, port, broadcast_addr, (err) => {
 			if(err) {
 				reject(err);
 			} else {
@@ -31,7 +30,6 @@ function processProbeMatch(message: Buffer, probe: ProbeBuilder, remote: RemoteI
 	let document = parser.process(message.toString());
 	const transformer = XMLNode.toObject({});
 	const json_msg = transformer(document);
-
 	const probe_match = new ProbeMatch(json_msg);
 	if(probe_match.validMatch(probe.message_id)) { 
 		return probe_match; 
@@ -78,14 +76,14 @@ export class DeviceEmitter extends EventEmitter {
 	 */
 	close(): void {
 		this.socket.close();
-		this.emit(DeviceEmitter.CLOSE);
+		this.socket.on('close', () => this.emit(DeviceEmitter.CLOSE));
 	}
 
 	/**
 	 * Send a probe on the underlying socket and emit probe event
 	 */
-	async sendProbe(): Promise<Error | null> {
-		const prom = sendProbe(this.socket, this.probe);
+	async sendProbe(broadcast_addr: string, port: number): Promise<null> {
+		const prom = sendProbe(this.socket, this.probe, broadcast_addr, port);
 		this.emit(DeviceEmitter.PROBE, this.probe);
 		return prom;
 	}
@@ -114,13 +112,13 @@ export async function deviceSocket(socket: Socket, types: string[] = []): Promis
 	return Promise.resolve(emitter);
 }
 
-async function enumerateDevices(socket: Socket, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
+async function enumerateDevices(socket: Socket, broadcast_addr: string, port: number, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
 	const devices: ProbeMatch[] = [];
 	let emitter = await deviceSocket(socket, types);
 	emitter.on('match', match => devices.push(match));
-	await emitter.sendProbe();
+	await emitter.sendProbe(broadcast_addr, port);
 
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			emitter.on('close', () => resolve(devices));
 			emitter.close();
@@ -143,11 +141,9 @@ export function socketFactory(udp_version: SocketType, broadcast_addr: string, p
 		socket.bind(port, () => {
 			socket.addMembership(broadcast_addr);
 			socket.setBroadcast(true);
+			enumerateDevices(socket, broadcast_addr, port, scan_time, types).then(devices => resolve(devices));
 		});
 		socket.on('error', reject);
-		enumerateDevices(socket, scan_time, types).then((devices) => {
-			resolve(devices);
-		});
 	});
 }
 

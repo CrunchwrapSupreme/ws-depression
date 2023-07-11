@@ -9,7 +9,7 @@
     "/badges"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r .schema_cache dist/ && npx typedoc index.ts",
     "test": "jest",
     "test-ci": "jest --ci --coverage"
   },
