@@ -17,9 +17,9 @@ Built on top of a fork of https://github.com/do-/node-xml-toolkit
 
 # Using
 ```typescript
-import { discoverDeviceV4, discoverDeviceV6, deviceSocket } from 'ws-depression'
+import { discoverDevicesV4, discoverDevicesV6, deviceSocket } from 'ws-depression'
 
-discoverDeviceV4().then(x => {
+discoverDevicesV4().then(x => {
     const transports = x.map(x => x.transports);
     console.log(transports);
 });

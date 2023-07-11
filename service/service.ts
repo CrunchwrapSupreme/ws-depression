@@ -153,7 +153,7 @@ export function socketFactory(udp_version: SocketType, broadcast_addr: string, p
  * @param types list of types to probe by such as 'dn:NetworkVideoTransmitter'
  * @returns a promise resolving with an array of probe matches
  */
-export function discoverDeviceV4(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
+export function discoverDevicesV4(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
 	return socketFactory('udp4', IPV4_UPNP, scan_time, WS_DISCOVER_PORT, types);
 }
 
@@ -163,6 +163,6 @@ export function discoverDeviceV4(scan_time: number = 5000, types: string[] = [])
  * @param types list of types to probe by such as 'dn:NetworkVideoTransmitter'
  * @returns a promise resolving with an array of probe matches
  */
-export function discoverDeviceV6(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
+export function discoverDevicesV6(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
 	return socketFactory('udp6', IPV6_UPNP, scan_time, WS_DISCOVER_PORT, types);
 }
