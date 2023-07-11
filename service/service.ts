@@ -14,8 +14,9 @@ const parser = new XMLReader();
 
 // Helper to promisify the socket broadcast
 async function sendProbe(socket: Socket, probe: ProbeBuilder): Promise<Error|null> {
+	const addr = socket.address();
 	return new Promise((resolve, reject) => {
-		socket.send(probe.message, WS_DISCOVER_PORT, IPV4_UPNP, (err) => {
+		socket.send(probe.message, addr.port, addr.address, (err) => {
 			if(err) {
 				reject(err);
 			} else {
