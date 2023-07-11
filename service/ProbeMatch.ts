@@ -19,7 +19,7 @@ export class ProbeMatch {
         let val = origin_id == RelatesTo;
         val &&= To == "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
         val &&= Action == "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
-        val &&= valid_types.every(type => this.types.includes(type, 0));
+        val &&= valid_types.some(type => this.types.includes(type, 0));
         
         return val;
     }
@@ -40,11 +40,11 @@ export class ProbeMatch {
         return this.raw.Body.EndpointReference.Address;
     }
 
-    get transports(): null | string {
+    get transports(): null | string[] {
         const xaddrs = this.raw.Body.ProbeMatches.ProbeMatch?.XAddrs;
         
         if(xaddrs) {
-            return xaddrs.split(" ").map((v: string) => v.trim());
+            return splim(xaddrs);
         } else {
             return null;
         }
