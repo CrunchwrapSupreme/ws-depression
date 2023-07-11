@@ -118,7 +118,7 @@ async function enumerateDevices(socket: Socket, broadcast_addr: string, port: nu
     emitter.on('match', match => devices.push(match));
     await emitter.sendProbe(broadcast_addr, port);
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             emitter.on('close', () => resolve(devices));
             emitter.close();
@@ -139,9 +139,9 @@ export function socketFactory(udp_version: SocketType, broadcast_addr: string, p
     return new Promise((resolve, reject) => {
         const socket = createSocket(udp_version);
         socket.bind(port, () => {
-            socket.addMembership(broadcast_addr);
             socket.setBroadcast(true);
-            enumerateDevices(socket, broadcast_addr, port, scan_time, types).then(devices => resolve(devices));
+            socket.addMembership(broadcast_addr);
+            enumerateDevices(socket, broadcast_addr, port, scan_time, types).then(devices => resolve(devices)).catch(reject);
         });
         socket.on('error', reject);
     });
@@ -154,7 +154,7 @@ export function socketFactory(udp_version: SocketType, broadcast_addr: string, p
  * @returns a promise resolving with an array of probe matches
  */
 export function discoverDevicesV4(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
-    return socketFactory('udp4', IPV4_UPNP, scan_time, WS_DISCOVER_PORT, types);
+    return socketFactory('udp4', IPV4_UPNP, WS_DISCOVER_PORT, scan_time, types);
 }
 
 /**
@@ -164,5 +164,5 @@ export function discoverDevicesV4(scan_time: number = 5000, types: string[] = []
  * @returns a promise resolving with an array of probe matches
  */
 export function discoverDevicesV6(scan_time: number = 5000, types: string[] = []): Promise<ProbeMatch[]> {
-    return socketFactory('udp6', IPV6_UPNP, scan_time, WS_DISCOVER_PORT, types);
+    return socketFactory('udp6', IPV6_UPNP, WS_DISCOVER_PORT, scan_time, types);
 }
