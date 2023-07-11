@@ -1,6 +1,6 @@
 {
   "name": "@crunchwrapsupreme/ws-depression",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "ws-discovery over UDP multicast.",
   "main": "dist/index.js",
   "type": "module",
