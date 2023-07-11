@@ -12,14 +12,13 @@ export class ProbeMatch {
 		this.raw = json_msg;
 	}
 
-	validMatch(origin_id: string, valid_type: null | string = null): boolean {
+	validMatch(origin_id: string, valid_types: string[] = []): boolean {
 		const { RelatesTo, To, Action } = this.raw?.Header;
 		let val = origin_id == RelatesTo;
 		val &&= To == "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
 		val &&= Action == "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
-		if(valid_type) {
-			val &&= this.types.includes(valid_type, 0);
-		}
+		val &&= valid_types.every(type => this.types.includes(type, 0));
+		
 		return val;
 	}
 
