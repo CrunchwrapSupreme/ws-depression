@@ -1,3 +1,5 @@
+import { RemoteInfo } from "node:dgram";
+
 function splim(v: string) {
     return v.split(' ').map((v: string) => v.trim());
 }
@@ -5,9 +7,11 @@ function splim(v: string) {
 // Deserialization type for ProbeMatch
 export class ProbeMatch {
     readonly raw: any;
+    readonly remote: RemoteInfo;
 
-    constructor(json_msg: any) {
+    constructor(json_msg: any, remote: RemoteInfo) {
         this.raw = json_msg;
+        this.remote = remote;
     }
 
     validMatch(origin_id: string, valid_types: string[] = []): boolean {

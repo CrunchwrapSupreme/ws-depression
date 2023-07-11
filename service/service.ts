@@ -25,19 +25,22 @@ async function sendProbe(socket: Socket, probe: ProbeBuilder, broadcast_addr: st
     });
 }
 
-// Helper to deserialize and process probe match
-function processProbeMatch(message: Buffer, probe: ProbeBuilder, remote: RemoteInfo): ProbeMatch | null {
-    let document = parser.process(message.toString());
-    const transformer = XMLNode.toObject({});
-    const json_msg = transformer(document);
-    const probe_match = new ProbeMatch(json_msg);
-    if(probe_match.validMatch(probe.message_id)) { 
-        return probe_match; 
-    } else if(probe_match.message_id != probe.message_id) {
-        console.log(json_msg);
-    }
+function datagramErrFormat(cause: Error, info: RemoteInfo): string {
+    const info_str = `${info.address}:${info.port} (${info.size} bytes)`;
+    return `Error processing datagram ${info_str}:\n${cause.message}`;
+}
 
-    return null;
+export class DiscoveryError extends Error {
+    readonly datagram: Buffer;
+    readonly remote: RemoteInfo;
+    readonly cause: Error;
+
+    constructor(cause: Error, datagram: Buffer, remote: RemoteInfo) {
+        super(datagramErrFormat(cause, remote));
+        this.datagram = datagram;
+        this.remote = remote;
+        this.cause = cause;
+    }
 }
 
 /**
@@ -62,6 +65,19 @@ export class DeviceEmitter extends EventEmitter {
      * @event
      */
     static readonly CLOSE = 'close';
+    /**
+     * Emitted when a datagram fails to process.
+     * Handler accepts [[DiscoveryError]] on error.
+     * @event
+     */
+    static readonly ERROR = 'error';
+    /**
+     * Emitted when a datagram is processed but fails validation.
+     * Handler accepts [[ProbeMatch]]
+     * @event
+     */
+    static readonly MISMATCH = 'mismatch';
+
 
     constructor(socket: Socket, xs: any, types: string[]) {
         super();
@@ -90,12 +106,26 @@ export class DeviceEmitter extends EventEmitter {
 
     private socketListener(socket: Socket): void {
         socket.on('message', (message: Buffer, remote: RemoteInfo) => {
-            const match = processProbeMatch(message, this.probe, remote);
-
-            if(match) {
-                this.emit(DeviceEmitter.MATCH, match);
+            try {
+                this.processProbeMatch(message, remote);
+            } catch(err) {
+                const wrapper = new DiscoveryError(err, message, remote);
+                this.emit(DeviceEmitter.ERROR, wrapper);
             }
         });
+    }
+
+    private processProbeMatch(message: Buffer, remote: RemoteInfo) {
+        let document = parser.process(message.toString());
+        const transformer = XMLNode.toObject({});
+        const json_msg = transformer(document);
+        const probe_match = new ProbeMatch(json_msg, remote);
+        
+        if (probe_match.validMatch(this.probe.message_id)) {
+            this.emit(DeviceEmitter.MATCH, probe_match);
+        } else if (probe_match.message_id != this.probe.message_id) {
+            this.emit(DeviceEmitter.MISMATCH, probe_match)
+        }
     }
 }
 
