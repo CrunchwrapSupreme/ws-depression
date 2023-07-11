@@ -112,6 +112,16 @@ export class DeviceEmitter extends EventEmitter {
         });
     }
 
+    /** Broadcast IPv4 UDP probe */
+    broadcastProbeV4() {
+        return this.sendProbe(IPV4_UPNP, WS_DISCOVER_PORT);
+    }
+
+    /** Broadcast IPv6 UDP probe */
+    broadcastProbeV6() {
+        return this.sendProbe(IPV6_UPNP, WS_DISCOVER_PORT);
+    }
+
     private addListeners(): void {
         this.socket.on('close', () => this.emit(DeviceEmitter.CLOSE));
         this.socket.on('message', (message: Buffer, remote: RemoteInfo) => {
