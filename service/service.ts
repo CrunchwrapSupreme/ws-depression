@@ -53,23 +53,25 @@ export class DeviceEmitter extends EventEmitter {
     readonly types: string[];
 
     /** 
-     * Emitted when a probe is sent
+     * Emitted when a probe is sent.
+     * Handler accepts [[ProbeBuilder]]
      * @event
      */
     static readonly PROBE = 'probe';
     /** 
-     * Emitted when a ProbeMatch is processed and provides it as the argument
+     * Emitted when a ProbeMatch is processed.
+     * Handler accepts [[ProbeMatch]]
      * @event
      */
     static readonly MATCH = 'match';
     /**
-     * Emitted when close is called
+     * Emitted when close is called.
      * @event
      */
     static readonly CLOSE = 'close';
     /**
      * Emitted when a datagram fails to process.
-     * Handler accepts [[DiscoveryError]] on error.
+     * Handler accepts [[DiscoveryError]]
      * @event
      */
     static readonly ERROR = 'error';
