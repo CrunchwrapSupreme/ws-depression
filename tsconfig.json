@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      "allowJs": true,
+      "checkJs": false,
+      "declaration": true,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "moduleResolution": "Node",
+      "allowSyntheticDefaultImports": true,
+      "target": "ES2020",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "baseUrl": "./",
+      "incremental": true,
+      "skipLibCheck": true,
+      "strictNullChecks": true,
+      "noImplicitAny": true,
+      "strictBindCallApply": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "esModuleInterop": true
+    },
+    "include": ["service/*.ts", "lib/*.js"],
+    "exclude": ["dist"],
+    "files": ["index.ts"]
+}
