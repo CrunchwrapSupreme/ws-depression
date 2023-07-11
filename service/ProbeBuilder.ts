@@ -1,6 +1,9 @@
 import XMLSchemata from '../lib/XMLSchemata.js';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Helper type for deserialization a ws-discovery Probe message
+ */
 export class ProbeBuilder {
     readonly message_id: string;
     readonly message: string;

@@ -1,52 +1,81 @@
 import { RemoteInfo } from "node:dgram";
 
-function splim(v: string) {
+const NoneVal = null;
+export type None = null;
+export type Optional<T> = T | None;
+
+export interface ObjectMessage {
+    [attr: string]: ObjectMessage | String
+}
+
+function splim(v: string): string[] {
     return v.split(' ').map((v: string) => v.trim());
 }
 
-// Deserialization type for ProbeMatch
+function dig<T, R=string>(root: ObjectMessage, path: string, defval: T): R | T {
+    const attr_path = path.split('.');
+    let node: any = root;
+    
+    for(const attr of attr_path) {
+        if(attr in node) {
+            node = node[attr];
+        } else {
+            return defval;
+        }
+    }
+
+    return node;
+}
+
+/** 
+* Deserialization type for ws-discovery ProbeMatch
+*/
 export class ProbeMatch {
-    readonly raw: any;
+    readonly raw: ObjectMessage;
     readonly remote: RemoteInfo;
 
-    constructor(json_msg: any, remote: RemoteInfo) {
+    constructor(json_msg: ObjectMessage, remote: RemoteInfo) {
         this.raw = json_msg;
         this.remote = remote;
     }
 
     validMatch(origin_id: string, valid_types: string[] = []): boolean {
-        const { RelatesTo, To, Action } = this.raw?.Header;
-        let val = origin_id == RelatesTo;
-        val &&= To == "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
-        val &&= Action == "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
+        let val = this.relates_to === origin_id
+        val &&= this.to === "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
+        val &&= this.action === "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
         val &&= valid_types.some(type => this.types.includes(type, 0));
         
         return val;
     }
 
-    get message_id(): string {
-        return this.raw.Header.MessageID;
+    get action(): Optional<String> {
+        return dig(this.raw, 'Header.Action', NoneVal)
+    }
+
+    get to(): Optional<String> {
+        return dig(this.raw, 'Header.To', NoneVal);
+    }
+
+    get relates_to(): Optional<String> {
+        return dig(this.raw, 'Header.RelatesTo', NoneVal);
+    }
+
+    get message_id(): Optional<String> {
+        return dig(this.raw, 'Header.MessageID', NoneVal);
     }
 
     get types(): string[] {
-        return splim(this.raw.Body.ProbeMatches.ProbeMatch.Types);
+        const types = dig(this.raw, 'Body.ProbeMatches.ProbeMatch.Types', '');
+        return splim(types);
     }
 
     get scopes(): string[] {
-        return splim(this.raw.Body.ProbeMatches.ProbeMatch.Scopes);
+        const scopes = dig(this.raw, 'Body.ProbeMatches.ProbeMatch.Scopes', '');
+        return splim(scopes);
     }
 
-    get endpointAddress(): string {
-        return this.raw.Body.EndpointReference.Address;
-    }
-
-    get transports(): null | string[] {
-        const xaddrs = this.raw.Body.ProbeMatches.ProbeMatch?.XAddrs;
-        
-        if(xaddrs) {
-            return splim(xaddrs);
-        } else {
-            return null;
-        }
+    get transports(): string[] {
+        const xaddrs = dig(this.raw, 'Body.ProbeMatches.ProbeMatch.XAddrs', '');
+        return splim(xaddrs);
     }
 }

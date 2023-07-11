@@ -5,8 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "files": [
-    "/dist",
-    "/badges"
+    "/dist"
   ],
   "scripts": {
     "build": "tsc && cp -r .schema_cache dist/",
@@ -41,7 +40,7 @@
   "keywords": [
     "soap",
     "ws-discovery",
-    "satan"
+    "upnp"
   ],
   "author": "David Young",
   "license": "MIT",
@@ -64,6 +63,6 @@
   "types": "./dist/index.d.ts",
   "directories": {
     "doc": "docs",
-    "lib": "lib"
+    "lib": "service"
   }
 }

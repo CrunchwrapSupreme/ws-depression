@@ -1,45 +1,45 @@
 
- import XMLNetSchemata from '../lib/XMLNetSchemata.js';
- import XMLNode from '../lib/XMLNode.js';
- import XMLReader from '../lib/XMLParser.js';
+import XMLNetSchemata from '../lib/XMLNetSchemata.js';
+import XMLNode from '../lib/XMLNode.js';
+import XMLReader from '../lib/XMLParser.js';
+import XMLSchemata from '../lib/XMLSchemata.js';
 
 import { IPV4_UPNP, IPV6_UPNP, WS_DISCOVER_PORT, xsd_files } from './constants.js';
 import { ProbeMatch } from './ProbeMatch.js';
 import { ProbeBuilder } from './ProbeBuilder.js';
 
-import { RemoteInfo, Socket, SocketType, createSocket } from 'dgram';
+import { RemoteInfo, SocketType, createSocket } from 'dgram';
 import EventEmitter from 'events';
 
 const parser = new XMLReader();
 
-// Helper to promisify the socket broadcast
-async function sendProbe(socket: Socket, probe: ProbeBuilder, broadcast_addr: string, port: number): Promise<null> {
-    return new Promise((resolve, reject) => {
-        socket.send(probe.message, port, broadcast_addr, (err) => {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(null);
-            }
-        });
-    });
+/** Generic interface for testing + supporting other socket types. */
+export interface SocketProducer {
+    on(event: 'message', listener: (message: Buffer, remote: RemoteInfo) => void): void;
+    on(event: 'close', listener: () => void): void;
+    send(message: string, port: number, address: string, handler: (err: Error) => void): void;
+    close(): void;
 }
 
-function datagramErrFormat(cause: Error, info: RemoteInfo): string {
-    const info_str = `${info.address}:${info.port} (${info.size} bytes)`;
-    return `Error processing datagram ${info_str}:\n${cause.message}`;
-}
-
+/**
+ * An generic error wrapper sent by DeviceEmitter on processing errors
+ */
 export class DiscoveryError extends Error {
     readonly datagram: Buffer;
     readonly remote: RemoteInfo;
     readonly cause: Error;
 
     constructor(cause: Error, datagram: Buffer, remote: RemoteInfo) {
-        super(datagramErrFormat(cause, remote));
+        super(DiscoveryError.formatDgramErr(cause, remote));
         this.datagram = datagram;
         this.remote = remote;
         this.cause = cause;
+    }
+
+    /** Format the error string for [[DiscoveryError]] */
+    static formatDgramErr(cause: Error, info: RemoteInfo): string {
+        const info_str = `${info.address}:${info.port} (${info.size} bytes)`;
+        return `Error processing datagram ${info_str}:\n${cause.message}`;
     }
 }
 
@@ -47,8 +47,8 @@ export class DiscoveryError extends Error {
  * Utility class to wrap socket with an event emitter
  */
 export class DeviceEmitter extends EventEmitter {
-    readonly socket: Socket;
-    readonly xs: any;
+    readonly socket: SocketProducer;
+    readonly xs: XMLSchemata;
     readonly probe: ProbeBuilder;
     /** 
      * Emitted when a probe is sent
@@ -78,13 +78,12 @@ export class DeviceEmitter extends EventEmitter {
      */
     static readonly MISMATCH = 'mismatch';
 
-
-    constructor(socket: Socket, xs: any, types: string[]) {
+    constructor(socket: SocketProducer, xs: XMLSchemata, types: string[]) {
         super();
         this.socket = socket;
         this.xs = xs;
         this.probe = new ProbeBuilder(xs, types);
-        this.socketListener(socket);
+        this.addListeners();
     }
 
     /**
@@ -92,20 +91,27 @@ export class DeviceEmitter extends EventEmitter {
      */
     close(): void {
         this.socket.close();
-        this.socket.on('close', () => this.emit(DeviceEmitter.CLOSE));
     }
 
     /**
      * Send a probe on the underlying socket and emit probe event
      */
-    async sendProbe(broadcast_addr: string, port: number): Promise<null> {
-        const prom = sendProbe(this.socket, this.probe, broadcast_addr, port);
-        this.emit(DeviceEmitter.PROBE, this.probe);
-        return prom;
+    sendProbe(broadcast_addr: string, port: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.socket.send(this.probe.message, port, broadcast_addr, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    this.emit(DeviceEmitter.PROBE, this.probe);
+                    resolve();
+                }
+            });
+        });
     }
 
-    private socketListener(socket: Socket): void {
-        socket.on('message', (message: Buffer, remote: RemoteInfo) => {
+    private addListeners(): void {
+        this.socket.on('close', () => this.emit(DeviceEmitter.CLOSE));
+        this.socket.on('message', (message: Buffer, remote: RemoteInfo) => {
             try {
                 this.processProbeMatch(message, remote);
             } catch(err) {
@@ -136,13 +142,13 @@ export class DeviceEmitter extends EventEmitter {
  * @param types list of types to probe by such as 'dn:NetworkVideoTransmitter'
  * @returns an emitter for ws-discovery events
  */
-export async function deviceSocket(socket: Socket, types: string[] = []): Promise<DeviceEmitter> {
+export async function deviceSocket(socket: SocketProducer, types: string[] = []): Promise<DeviceEmitter> {
     const xs = await XMLNetSchemata.fromNetFiles(...xsd_files);
     let emitter = new DeviceEmitter(socket, xs, types);
     return Promise.resolve(emitter);
 }
 
-async function enumerateDevices(socket: Socket, broadcast_addr: string, port: number, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
+async function enumerateDevices(socket: SocketProducer, broadcast_addr: string, port: number, scan_time: number, types: string[]): Promise<ProbeMatch[]> {
     const devices: ProbeMatch[] = [];
     let emitter = await deviceSocket(socket, types);
     emitter.on('match', match => devices.push(match));
