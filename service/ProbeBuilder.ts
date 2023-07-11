@@ -14,7 +14,7 @@ export class ProbeBuilder {
 		this.message = this.build_probe();
 	}
 
-	build_header() {
+	private build_header() {
 		const fields = [];
 		const { xs, message_id } = this;
 		//const must = { mustUnderstand: true };
@@ -30,7 +30,7 @@ export class ProbeBuilder {
 		return this._types.join('  ');
 	}
 
-	build_body() {
+	private build_body() {
 		const { xs } = this;
 		const types = xs.stringify({ Types: this.types }, {}, true);
 		const body = {
@@ -40,7 +40,7 @@ export class ProbeBuilder {
 		return XMLSchemata.any(body_xml, {});
 	}
 
-	build_probe() {
+	private build_probe() {
 		const message = { 
 			Envelope: {
 				Header: this.build_header(),
