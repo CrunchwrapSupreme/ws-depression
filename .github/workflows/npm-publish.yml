@@ -31,7 +31,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run build-docs
-      - run: git checkout -b main
       - run: git add docs/\*
       - run: git config --global user.name "Github Actions"
       - run: git config --global user.email "ci@users.noreply.github.com"  
