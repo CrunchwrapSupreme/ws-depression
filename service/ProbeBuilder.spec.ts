@@ -7,11 +7,10 @@ import { DiscoveryUrn, ProbeAction, xsd_files } from "./constants";
 
 describe('ProbeBuilder', () => {
     let xs: XMLNetSchemata;
-    let builder: ProbeBuilder;
 
     beforeAll(async () => {
         xs = await XMLNetSchemata.fromNetFiles(...xsd_files);
-    })
+    }, 5000);
 
     test('#message', () => {
         const builder = new ProbeBuilder(xs, [video_transmitter]);
@@ -29,5 +28,15 @@ describe('ProbeBuilder', () => {
         }
         debugger;
         expect(builder.object_message).toEqual(expected_msg);
+    });
+    
+    test('#types', () => { 
+        const builder = new ProbeBuilder(xs, [video_transmitter]);
+        expect(builder.types).toEqual([video_transmitter]);
+    });
+
+    test('#message_id', () => {
+        const builder = new ProbeBuilder(xs, [video_transmitter]);
+        expect(builder.message_id).toBeTruthy();
     });
 });
