@@ -31,7 +31,7 @@ jobs:
       - run: npm run build
       - run: npm run build-docs
       - run: git add docs/\*
-      - run: git commit -m "Built docs for ${npm pkg get version}"
+      - run: git commit -m "Built docs for $(npm pkg get version)"
       - run: git push origin main
       - run: npm publish --access public
         env:
