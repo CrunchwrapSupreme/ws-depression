@@ -32,7 +32,7 @@ jobs:
       - run: npm run build
       - run: npm run build-docs
       - run: git add docs/\*
-      - run: git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+      - run: git config --global user.name "Github Actions"
       - run: git config --global user.email "ci@users.noreply.github.com"  
       - run: git commit -m "Built docs for $(npm pkg get version)"
       - run: git push origin main
