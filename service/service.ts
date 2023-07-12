@@ -17,7 +17,7 @@ const parser = new XMLReader();
 export interface SocketProducer {
     on(event: 'message', listener: (message: Buffer, remote: RemoteInfo) => void): void;
     on(event: 'close', listener: () => void): void;
-    send(message: string, port: number, address: string, handler: (err: Error) => void): void;
+    send(msg: string | Uint8Array | ReadonlyArray<any>, port?: number, address?: string, callback?: (error: Error | null, bytes: number) => void): void;
     close(): void;
 }
 
@@ -135,7 +135,7 @@ export class DeviceEmitter extends EventEmitter {
             try {
                 this.processProbeMatch(message, remote);
             } catch(err) {
-                const wrapper = new DiscoveryError(err, message, remote);
+                const wrapper = new DiscoveryError(err as Error, message, remote);
                 this.emit(DeviceEmitter.ERROR, wrapper);
             }
         });
