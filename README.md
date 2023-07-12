@@ -6,7 +6,7 @@
 Does ws-discovery via UDP UPnP. Forked from some dude. Thanks dude.
 
 # Requirements
-* node
+* node.js >= v18.0.0 (may work with other versions, tested with 18.0.0)
 
 # Documentation
 https://crunchwrapsupreme.github.io/ws-depression/
@@ -35,6 +35,3 @@ deviceSocket(socket).then(deviceListener => {
 ```
 
 The promises returned by the discover functions resolve with a list of `ProbeMatch` objects. The is also the `socketFactory` and `deviceSocket` functions which provides more options for initialization.
-
-## TODO
-* tests
