@@ -1,4 +1,5 @@
 import { RemoteInfo } from "node:dgram";
+import { AnonAddress, ProbeMatchAction } from "./constants";
 
 const NoneVal = null;
 export type None = null;
@@ -40,8 +41,8 @@ export class ProbeMatch {
 
     validMatch(origin_id: string, valid_types: string[] = []): boolean {
         let val = this.relates_to === origin_id
-        val &&= this.to === "http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous";
-        val &&= this.action === "http://schemas.xmlsoap.org/ws/2005/04/discovery/ProbeMatches";
+        val &&= this.to === AnonAddress;
+        val &&= this.action === ProbeMatchAction;
         val &&= valid_types.length == 0 || valid_types.some(type => this.types.includes(type, 0));
         
         return val;

@@ -1,3 +1,6 @@
+![npm (scoped)](https://img.shields.io/npm/v/%40crunchwrapsupreme/ws-depression)
+![npm](https://img.shields.io/npm/dt/%40crunchwrapsupreme/ws-depression)
+
 # ws-depression
 Does ws-discovery via UDP UPnP. Forked from some dude. Thanks dude.
 

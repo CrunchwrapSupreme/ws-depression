@@ -1,5 +1,8 @@
 import XMLSchemata from '../lib/XMLSchemata.js';
 import { v4 as uuidv4 } from 'uuid';
+import XMLReader from '../lib/XMLParser.js';
+import XMLNode from '../lib/XMLNode.js';
+import { DiscoveryUrn, ProbeAction } from './constants';
 
 /**
  * Helper type for deserialization a ws-discovery Probe message
@@ -17,12 +20,18 @@ export class ProbeBuilder {
         this.message = this.build_probe();
     }
 
+    get object_message(): any {
+        const parser = new XMLReader();
+        const transformer = XMLNode.toObject({});
+        return transformer(parser.process(this.message));
+    }
+
     private build_header() {
         const fields = [];
         const { xs, message_id } = this;
         fields.push({ MessageID: message_id });
-        fields.push({ To: 'urn:schemas-xmlsoap-org:ws:2005:04:discovery' });
-        fields.push({ Action: 'http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe' });
+        fields.push({ To: DiscoveryUrn });
+        fields.push({ Action: ProbeAction });
 
         const header_fields = fields.map((field) => xs.stringify(field, {}, true));
         return XMLSchemata.any(header_fields.join(""), {});
