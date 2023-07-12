@@ -1,9 +1,6 @@
 import { RemoteInfo } from "node:dgram";
 import { AnonAddress, ProbeMatchAction } from "./constants";
 
-const NoneVal = null;
-export type None = null;
-
 export interface MessageObject {
     [attr: string]: MessageObject | String
 }
