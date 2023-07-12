@@ -9,7 +9,8 @@ Does ws-discovery via UDP UPnP. Forked from some dude. Thanks dude.
 * node.js >= v18.0.0 (may work with other versions, tested with 18.0.0)
 
 # Documentation
-https://crunchwrapsupreme.github.io/ws-depression/
+* [Typescripts Docs](https://crunchwrapsupreme.github.io/ws-depression/)
+* [Repository](https://github.com/CrunchwrapSupreme/ws-depression)
 
 # Installation
 ```shell
