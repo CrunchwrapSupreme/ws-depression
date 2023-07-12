@@ -8,5 +8,6 @@
     "outDir": "dist"
   },
   "include": ["service/*.ts", "lib/*.js"],
+  "exclude": ["**/*.spec.ts"],
   "files": ["index.ts"]
 }
