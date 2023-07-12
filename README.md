@@ -1,5 +1,6 @@
 ![npm (scoped)](https://img.shields.io/npm/v/%40crunchwrapsupreme/ws-depression)
 ![npm](https://img.shields.io/npm/dt/%40crunchwrapsupreme/ws-depression)
+[![Node.js CI](https://github.com/CrunchwrapSupreme/ws-depression/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/CrunchwrapSupreme/ws-depression/actions/workflows/node.js.yml)
 
 # ws-depression
 Does ws-discovery via UDP UPnP. Forked from some dude. Thanks dude.
