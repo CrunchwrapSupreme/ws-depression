@@ -5,7 +5,8 @@
     "moduleResolution": "Node",
     "allowJs": true,
     "checkJs": false,
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   },
   "include": ["service/*.ts", "lib/*.js"],
   "exclude": ["**/*.spec.ts"],
